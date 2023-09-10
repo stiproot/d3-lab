@@ -1,4 +1,4 @@
-// import { sample_data } from "./nested-treemap-data.js";
+import { sample_data } from "../data/nested-treemap-data.js";
 
 const min = 1;
 const max = 100;
@@ -19,9 +19,9 @@ export function buildNestedTreeMap(_data, container) {
     enrichNode(n);
   });
 
-  const data = _data[0];
+  // const data = _data[0];
+  const data = sample_data[0];
   data.title = "root";
-  // const data = sample_data[0];
   const width = window.innerWidth;
   const height = 1500; //window.innerHeight;
 
