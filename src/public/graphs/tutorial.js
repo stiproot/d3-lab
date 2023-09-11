@@ -22,5 +22,5 @@ export function build(container) {
     .attr("width", 8)
     .attr("fill", "blue")
     .attr("x", (d, i) => 10 * i)
-    .attr("y", (d, i) => 300 - d * 50);
+    .attr("y", (d, i) => height - d * 50);
 }
