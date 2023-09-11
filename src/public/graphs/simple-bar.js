@@ -1,7 +1,9 @@
 const barData = [];
+const times = [];
 
 for (let i = 0; i < 50; i++) {
   barData.push(Math.random() * 300);
+  times.push(i);
 }
 
 const margin = { top: 40, right: 0, bottom: 0, left: 30 },
@@ -20,14 +22,21 @@ const yAxisValues = d3
   .domain([0, d3.max(barData)])
   .range([height, 0]);
 
-const yAxisTicks = d3.axisLeft(yAxisValues).ticks(10);
-
 const xScale = d3
   .scaleBand()
   .domain(barData)
   .paddingInner(0.1)
   .paddingOuter(0.1)
   .range([0, width]);
+
+const xAxisValues = d3
+  .scaleTime()
+  .domain([times[0], times[times.length - 1]])
+  .range([0, width]);
+
+const xAxisTicks = d3.axisBottom(xAxisValues).ticks(d3.timeDay.every(1));
+
+const yAxisTicks = d3.axisLeft(yAxisValues).ticks(10);
 
 const colors = d3
   .scaleLinear()
@@ -79,9 +88,15 @@ export function buildSimpleBar(_data, container_id) {
 
   const yGuide = d3
     .select(container_id + " svg")
-    .attr("transform", "translate(20,0)")
     .append("g")
+    .attr("transform", "translate(20,0)")
     .call(yAxisTicks);
+
+  const xGuide = d3
+    .select(container_id + " svg")
+    .append("g")
+    .attr("transform", "translate(20," + height + ")")
+    .call(xAxisTicks);
 
   chart
     .transition()

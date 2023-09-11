@@ -5,11 +5,13 @@
     <script type="text/javascript" src="./d3.v7.min.js"></script>
     <script type="module">
       // import { buildNestedTreeMap } from "./graphs/nested-treemap.js";
-      import { buildSimpleBar } from "./graphs/simple-bar.js";
+      //import { buildSimpleBar } from "./graphs/simple-bar.js";
+      import { build } from "./graphs/tutorial.js";
 
       document.addEventListener("DOMContentLoaded", function () {
         //buildNestedTreeMap([], document.querySelector("#container"));
-        buildSimpleBar([], "#container");
+        // buildSimpleBar([], "#container");
+        build("#container");
       });
     </script>
   </head>
