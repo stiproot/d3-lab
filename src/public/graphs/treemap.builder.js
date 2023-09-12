@@ -32,37 +32,22 @@ export function buildTreeMapSvg(data, max = 100) {
       "max-width: 100%; height: auto; overflow: visible; font: 10px sans-serif;"
     );
 
-  const shadowId = `shadow-${Math.random().toString(36).substr(2, 9)}`;
   const nodeUidId = `nodeUid-${Math.random().toString(36).substr(2, 9)}`;
   const clipUidId = `clipUid-${Math.random().toString(36).substr(2, 9)}`;
-
-  svg
-    .append("filter")
-    .attr("id", shadowId)
-    .append("feDropShadow")
-    .attr("flood-opacity", 0.3)
-    .attr("dx", 0)
-    .attr("stdDeviation", 3);
 
   const node = svg
     .selectAll("g")
     .data(d3.group(root, (d) => d.height))
     .join("g")
-    .attr("filter", `url(#${shadowId})`)
     .selectAll("g")
     .data((d) => d[1])
     .join("g")
     .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
 
   const format = d3.format(",d");
-  node.append("title").text(
-    (d) =>
-      `${d
-        .ancestors()
-        .reverse()
-        .map((d) => d.data.title)
-        .join("/")}\n${format(d.value)}`
-  );
+  node
+    .append("title")
+    .text((d) => `${d.value}\n${d.data.type}\n${d.data.title}`);
 
   node
     .append("rect")
