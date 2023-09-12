@@ -47,12 +47,23 @@ const prepareData = (raw) => {
   // filter...
   const filtered = [];
   const featureFilter = (n) => n.type == "Feature";
-  // const hasTasksFilter = (n) => n.children && n.children.length > 0;
   deepFilter(raw, [featureFilter], filtered);
 
-  const hasChildrenFilter = (n) => n.has_children;
+  const _getTasks = (_node, tasks) => {
+    if (_node.type === "Task") {
+      tasks.push(_node);
+    } else {
+      _node.children.forEach((c) => _getTasks(c, tasks));
+    }
+  };
 
-  return filtered;
+  const furtherFiltered = filtered.filter((n) => {
+    const tasks = [];
+    _getTasks(n, tasks);
+    return tasks.length > 0;
+  });
+
+  return furtherFiltered;
 };
 
 function buildSvg(data, container) {
