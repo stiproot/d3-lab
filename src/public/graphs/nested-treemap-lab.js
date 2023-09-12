@@ -1,25 +1,64 @@
-import { sample_data } from "../data/nested-treemap-data-simple.js";
+import { sample_data } from "../data/weighted.js";
 
 const min = 1;
 const max = 100;
 const rndInt = () => Math.floor(Math.random() * (max - min + 1)) + min;
 const rndTitle = () => Math.random().toString(36).substr(2, 9);
-const enrich = (n) => {
-  if (n["type"] === "Task") {
-    n.risk_weight = rndInt();
+const enrich = (n, predicateFn, enrichFns) => {
+  if (predicateFn && predicateFn(n)) {
+    enrichFns.forEach((fn) => fn(n));
   }
 
-  (n.children ?? []).forEach((c) => enrich(c));
+  if (!predicateFn) {
+    enrichFns.forEach((fn) => fn(n));
+  }
+
+  (n.children ?? []).forEach((c) => enrich(c, predicateFn, enrichFns));
 };
 
-export function buildNestedTreeMap(_data, container) {
-  const data = sample_data[0];
-  data.children.forEach((c) => enrich(c));
-  data.title = "root";
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+const deepFilter = (root, predicates, filtered) => {
+  for (const node of root.children) {
+    var match = true;
+    for (const predicate of predicates) {
+      match = match && predicate(node);
+    }
 
-  // const color = d3.scaleSequential([8, 0], d3.interpolateMagma);
+    if (match) {
+      filtered.push(node);
+    }
+  }
+
+  for (const node of root.children) {
+    deepFilter(node, predicates, filtered);
+  }
+};
+
+const prepareData = (raw) => {
+  // enrich...
+  const isTaskPredicateFn = (n) => n["type"] === "Task";
+  const enrichTaskFn = [(n) => (n.risk_weight = rndInt())];
+  enrich(raw, isTaskPredicateFn, enrichTaskFn);
+
+  const enrichWithHasChildren = [
+    (n) => (n.has_children = n.children && n.children.length > 0),
+  ];
+  enrich(raw, null, enrichWithHasChildren);
+
+  // filter...
+  const filtered = [];
+  const featureFilter = (n) => n.type == "Feature";
+  // const hasTasksFilter = (n) => n.children && n.children.length > 0;
+  deepFilter(raw, [featureFilter], filtered);
+
+  const hasChildrenFilter = (n) => n.has_children;
+
+  return filtered;
+};
+
+function buildSvg(data, container) {
+  const width = window.innerWidth;
+  const height = 750;
+
   const color = d3
     .scaleLinear()
     .domain([0, max / 2, max])
@@ -118,5 +157,14 @@ export function buildNestedTreeMap(_data, container) {
       (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`
     );
 
-  container.append(svg.node());
+  return svg.node();
+}
+
+export function buildNestedTreeMap(_data, container) {
+  const data = prepareData(sample_data[0]);
+
+  for (const node of data) {
+    const svg = buildSvg(node);
+    container.append(svg);
+  }
 }
