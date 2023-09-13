@@ -3,6 +3,7 @@ export const sample_data = [
     id: "weighted_tree",
     type: "root",
     title: "root",
+    risk_weight: 0,
     children: [
       {
         children: [

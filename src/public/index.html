@@ -4,12 +4,14 @@
     <title></title>
     <script type="text/javascript" src="./d3.v7.min.js"></script>
     <script type="module">
+      import { buildSunburst } from "./graphs/sunburst.lab.js";
       import { buildTreeMap } from "./graphs/treemap.lab.js";
       import { buildNestedTreeMap } from "./graphs/nested-treemap.lab.js";
       // import { buildIndentedTree } from "./graphs/indented-tree.js";
 
       document.addEventListener("DOMContentLoaded", function () {
-        buildTreeMap([], document.querySelector("#container"));
+        buildSunburst([], document.querySelector("#container0"));
+        buildTreeMap([], document.querySelector("#container1"));
         buildNestedTreeMap([], document.querySelector("#container2"));
         // buildIndentedTree([], document.querySelector("#container"));
       });
@@ -17,7 +19,8 @@
   </head>
 
   <body>
-    <div id="container"></div>
+    <div id="container0"></div>
+    <div id="container1"></div>
     <div id="container2"></div>
   </body>
 </html>
